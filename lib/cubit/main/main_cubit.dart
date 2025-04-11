@@ -278,9 +278,8 @@ class MainCubit extends Cubit<MainState> {
 
   void sendAnalyticsEvent(int type, {int? seconds, required int id}) async {
     print("11111111");
-    ApiResponse response = await networkRepository.sendAnalyticsEvent(
-        id, type,
-        seconds: seconds);
+    ApiResponse response =
+        await networkRepository.sendAnalyticsEvent(id, type, seconds: seconds);
     print("------------------------------");
     print(type);
     print(response.success);

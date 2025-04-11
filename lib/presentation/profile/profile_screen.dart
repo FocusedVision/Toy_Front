@@ -9,6 +9,7 @@ import 'package:virtual_toy_shop/cubit/profile/profile_state.dart';
 import 'package:virtual_toy_shop/presentation/profile/edit_profile_screen.dart';
 import 'package:virtual_toy_shop/presentation/profile/privacy_policy_screen.dart';
 import 'package:virtual_toy_shop/presentation/profile/terms_of_usage_screen.dart';
+import 'package:virtual_toy_shop/presentation/profile/notification_settings.dart';
 import 'package:virtual_toy_shop/widgets/app_bars/main_app_bar.dart';
 import 'package:virtual_toy_shop/widgets/buttons/main_button.dart';
 import 'package:virtual_toy_shop/widgets/containers/custom_avatar.dart';
@@ -69,10 +70,27 @@ class ProfileScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(
-                        height: 24,
+                        height: 16,
                       ),
                       ProfileInfoPanel(),
+                      // const NotificationSettings(),
                       Spacer(),
+                      MainButton(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                              type: PageTransitionType.rightToLeftWithFade,
+                              child: NotificationSettingsScreen(),
+                            ),
+                          );
+                        },
+                        mainColor: MyColors.grayLight,
+                        shadowColor: MyColors.grayShadow,
+                        label: 'Notification Settings',
+                        isColumn: true,
+                      ),
+                      const SizedBox(height: 16),
                       const PrivacyTemsButtons(),
                       const SizedBox(
                         height: 16,
