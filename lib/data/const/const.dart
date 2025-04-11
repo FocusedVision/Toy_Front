@@ -1,0 +1,1 @@
+String noConnection = 'No connection';
