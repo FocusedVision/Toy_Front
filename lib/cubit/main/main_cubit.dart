@@ -348,4 +348,27 @@ class MainCubit extends Cubit<MainState> {
       print('Firebase verification failed: $e');
     }
   }
+
+  Future<Map<String, dynamic>?> getWishlistShareLink() async {
+    try {
+      ApiResponse response = await networkRepository.getWishlistShareLink();
+      if (response.success && response.data != null) {
+        final shareUrl = response.data['shareUrl'];
+        final productsCount = response.data['productsCount'];
+
+        if (shareUrl == null || productsCount == null) {
+          return null;
+        }
+
+        return {
+          'share_url': shareUrl.toString(),
+          'products_count': productsCount as int,
+        };
+      }
+      return null;
+    } catch (e) {
+      print('Error getting wishlist share link: $e');
+      return null;
+    }
+  }
 }

@@ -217,4 +217,15 @@ class NetworkRepository {
       return errorResponse(error.response);
     }
   }
+
+  Future getWishlistShareLink() async {
+    String endPoint = 'api/user/wishlist/share';
+    final api = service.getApiClient();
+    try {
+      final result = await api!.get(endPoint);
+      return ApiResponse.fromJson(result.data);
+    } on DioException catch (error) {
+      return errorResponse(error.response);
+    }
+  }
 }

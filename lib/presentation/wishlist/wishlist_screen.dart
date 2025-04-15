@@ -9,6 +9,8 @@ import 'package:virtual_toy_shop/widgets/app_bars/main_app_bar.dart';
 import 'package:virtual_toy_shop/widgets/pop_ups/confirm_pop_up.dart';
 import 'package:virtual_toy_shop/widgets/templates/no_connection.dart';
 import 'package:virtual_toy_shop/widgets/tiles/wishlist_tile.dart';
+import 'package:virtual_toy_shop/presentation/wishlist/widgets/share_options_bottom_sheet.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../config/my_colors.dart';
 import '../all_toys/toy_3d_screen.dart';
@@ -43,10 +45,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
       return !state.noConnection
           ? Scaffold(
               extendBodyBehindAppBar: true,
-              appBar: const MainAppBar(
-                label: 'Wishlist',
-                titleIcon: 'heart',
-              ),
+              appBar: buildAppBar(),
               body: state.wishlistProducts != null
                   ? SingleChildScrollView(
                       controller: scrollController,
@@ -101,6 +100,70 @@ class _WishlistScreenState extends State<WishlistScreen> {
               body: NoConnection(),
             );
     });
+  }
+
+  AppBar buildAppBar() {
+    return AppBar(
+      title: const Text('Wishlist'),
+      actions: [
+        IconButton(
+          icon: Image.asset(
+            'assets/icons/share.png',
+            height: 24,
+          ),
+          onPressed: () => _shareWishlist(),
+        ),
+      ],
+    );
+  }
+
+  void _shareWishlist() async {
+    try {
+      final response = await context.read<MainCubit>().getWishlistShareLink();
+      print("1111111111111111111111111111111111111 + ${response}");
+      if (response != null &&
+          response['share_url'] != null &&
+          response['products_count'] != null) {
+        if (!mounted) return;
+
+        showModalBottomSheet(
+          context: context,
+          backgroundColor: Colors.white,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          builder: (context) => ShareOptionsBottomSheet(
+            shareUrl: response['share_url'].toString(),
+            productCount: response['products_count'] as int,
+          ),
+        );
+      } else {
+        if (!mounted) return;
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Unable to generate share link'),
+            backgroundColor: MyColors.orange,
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Error sharing wishlist'),
+          backgroundColor: MyColors.orange,
+        ),
+      );
+    }
+  }
+
+  String? encodeQueryParameters(Map<String, String> params) {
+    return params.entries
+        .map((MapEntry<String, String> e) =>
+            '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+        .join('&');
   }
 
   Widget deleteButton(int id) {
