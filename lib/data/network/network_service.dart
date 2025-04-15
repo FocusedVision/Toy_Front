@@ -23,17 +23,23 @@ class NetworkService {
     if (_api == null) {
       _api = Dio();
       _api!.interceptors.clear();
-      _api!.interceptors.add(getInterceptor());
+      _api!.interceptors.add(InterceptorsWrapper(
+        onRequest: (options, handler) async {
+          final token = await getJwt();
+          if (token != null) {
+            options.headers['Authorization'] = 'Bearer $token';
+          }
+          return handler.next(options);
+        },
+      ));
       _api!.interceptors.add(PrettyDioLogger(
         requestBody: true,
         compact: false,
         maxWidth: 200,
       ));
       _api!.options.baseUrl = url;
-      return _api;
-    } else {
-      return _api;
     }
+    return _api;
   }
 
   Future<String?> getJwt() async {

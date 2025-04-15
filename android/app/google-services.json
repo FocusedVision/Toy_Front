@@ -1,43 +1,27 @@
 {
   "project_info": {
-    "project_number": "191874077722",
-    "project_id": "toyvalley-app",
-    "storage_bucket": "toyvalley-app.appspot.com"
+    "project_number": "991927031085",
+    "firebase_url": "https://empettoy-default-rtdb.firebaseio.com",
+    "project_id": "empettoy",
+    "storage_bucket": "empettoy.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:191874077722:android:327bad017320df376c6da3",
+        "mobilesdk_app_id": "1:991927031085:android:e7bc545605ad77c8bfafa4",
         "android_client_info": {
           "package_name": "com.empat.tech.toyvalley"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "191874077722-m02mel0qh357n9v73o4osgib509m65hi.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBZ5cWoGMbSnJ8_EQE-Q-O7Vfhw1CKhA10"
+          "current_key": "AIzaSyDC8H5sq7uhNDSPNuy0e2HdHBvS1lg81hU"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "191874077722-m02mel0qh357n9v73o4osgib509m65hi.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "191874077722-c70dfhptadv3vqcr51v1dkdgb4c004c2.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.empat.tech.toyvalley"
-              }
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

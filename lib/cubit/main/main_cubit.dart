@@ -51,10 +51,6 @@ class MainCubit extends Cubit<MainState> {
           sessionToken: sessionToken,
           signature: signature,
           deviceId: deviceId ?? '');
-
-      sendFirebaseToken();
-
-      startPushNotifications();
     } else if (result.data == noConnection) {
       emit(state.copyWith(screen: MainStateScreen.noConnection));
     }
@@ -84,19 +80,61 @@ class MainCubit extends Cubit<MainState> {
       getIt.get<NetworkService>().saveAuthSession(tokenData.accessToken ?? '');
 
       await getUser();
+      await sendFirebaseToken();
+      startPushNotifications();
+      verifyFirebaseSetup();
       getProducts(1);
       getNewProducts();
     }
   }
 
   Future sendFirebaseToken() async {
-    String token = await FirebaseMessaging.instance.getToken() ?? '';
-    ApiResponse response = await networkRepository.sendFirebaseToken(token);
+    try {
+      String? token = await FirebaseMessaging.instance.getToken();
+      print('Firebase Token Generated: $token'); // Debug log
+
+      if (token == null) {
+        print('Failed to generate Firebase token');
+        return;
+      }
+
+      final authToken = await getIt.get<NetworkService>().getJwt();
+      if (authToken == null) {
+        print('No authentication token available');
+        return;
+      }
+
+      ApiResponse response = await networkRepository.sendFirebaseToken(token);
+      print('Firebase Token Send Response: ${response.success}'); // Debug log
+
+      if (!response.success) {
+        print('Failed to send token to backend: ${response.data}');
+      }
+    } catch (e) {
+      print('Error in sendFirebaseToken: $e');
+    }
   }
 
-  void startPushNotifications() {
-    final firebaseMessaging = FCM();
-    firebaseMessaging.setNotifications();
+  void startPushNotifications() async {
+    try {
+      await FirebaseMessaging.instance.unsubscribeFromTopic('new_products');
+      await FirebaseMessaging.instance.subscribeToTopic('new_products');
+
+      final settings = await FirebaseMessaging.instance.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+
+      if (settings.authorizationStatus != AuthorizationStatus.authorized) {
+        print('Push notifications not authorized');
+        return;
+      }
+
+      print('Successfully subscribed to new_products topic');
+    } catch (e) {
+      print('Failed to setup push notifications: $e');
+    }
   }
 
   Future getUser() async {
@@ -277,12 +315,37 @@ class MainCubit extends Cubit<MainState> {
   }
 
   void sendAnalyticsEvent(int type, {int? seconds, required int id}) async {
-    print("11111111");
     ApiResponse response =
         await networkRepository.sendAnalyticsEvent(id, type, seconds: seconds);
-    print("------------------------------");
     print(type);
     print(response.success);
     print(response.data);
+  }
+
+  void checkNotificationSettings() async {
+    ApiResponse response = await networkRepository.getNotificationSettings();
+    if (response.success) {
+      bool isEnabled = response.data['is_enabled'];
+      if (!isEnabled) {
+        print('Notifications are disabled in user settings');
+      }
+    }
+  }
+
+  void verifyFirebaseSetup() async {
+    try {
+      final settings = await FirebaseMessaging.instance.requestPermission();
+      print('Notification Settings:');
+      print('Authorization Status: ${settings.authorizationStatus}');
+      print('Alert Setting: ${settings.alert}');
+      print('Badge Setting: ${settings.badge}');
+      print('Sound Setting: ${settings.sound}');
+
+      // Verify topic subscription
+      await FirebaseMessaging.instance.subscribeToTopic('new_products');
+      print('Topic subscription successful');
+    } catch (e) {
+      print('Firebase verification failed: $e');
+    }
   }
 }
