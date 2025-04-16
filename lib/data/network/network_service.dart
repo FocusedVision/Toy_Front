@@ -7,13 +7,13 @@ import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 class NetworkService {
   //final url = 'https://vtsa.empat.tech/';
   final _prodUrl = 'https://toyvalley.io/';
-  final _devUrl = 'https://vtsa.empat.tech/';
+  final _devUrl = 'http://192.168.227.134/';
 
   final _prodSecretKey = 'UEjfM5v67oe0EATZ';
   final _devSecretKey = 'PZSnrHjk7NAReJB2';
 
-  String get url => _prodUrl;
-  String get secretKey => _prodSecretKey;
+  String get url => _devUrl;
+  String get secretKey => _devSecretKey;
 
   Dio? _api;
   String? jwt;
@@ -23,21 +23,26 @@ class NetworkService {
     if (_api == null) {
       _api = Dio();
       _api!.interceptors.clear();
-      _api!.interceptors.add(getInterceptor());
+      _api!.interceptors.add(InterceptorsWrapper(
+        onRequest: (options, handler) async {
+          final token = await getJwt();
+          if (token != null) {
+            options.headers['Authorization'] = 'Bearer $token';
+          }
+          return handler.next(options);
+        },
+      ));
       _api!.interceptors.add(PrettyDioLogger(
         requestBody: true,
         compact: false,
         maxWidth: 200,
       ));
       _api!.options.baseUrl = url;
-      return _api;
-    } else {
-      return _api;
     }
+    return _api;
   }
 
   Future<String?> getJwt() async {
-
     if (jwt != null) {
       return jwt;
     } else {

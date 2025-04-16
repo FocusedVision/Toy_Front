@@ -14,12 +14,36 @@ import 'config/notification.dart';
 import 'cubit/main/main_cubit.dart';
 import 'firebase_options.dart';
 
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  print('Handling a background message: ${message.messageId}');
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    print('Firebase initialized successfully');
+
+    // Test Firebase configuration
+    final messaging = FirebaseMessaging.instance;
+    final settings = await messaging.requestPermission();
+    print('Authorization status: ${settings.authorizationStatus}');
+    print('APNs status: ${settings.authorizationStatus}');
+
+    // Set background message handler
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+    final fcm = FCM();
+    await fcm.setNotifications();
+  } catch (e) {
+    print('Firebase initialization failed: $e');
+  }
+
   await setup();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
   runApp(const MyApp());
 }
 
@@ -31,14 +55,22 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
-
-
   @override
   void initState() {
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
+
+    // Handle foreground messages
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print('Got a message whilst in the foreground!');
+      print('Message data: ${message.data}');
+
+      if (message.notification != null) {
+        print('Message also contained a notification: ${message.notification}');
+      }
+    });
+
     super.initState();
   }
 
@@ -48,7 +80,10 @@ class _MyAppState extends State<MyApp> {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => MainCubit()..initialize(),
+          create: (context) => MainCubit()
+            ..initialize()
+            ..startPushNotifications()
+            ..sendFirebaseToken(),
         ),
         BlocProvider(
           create: (context) => ProfileCubit()..initialize(),

@@ -50,20 +50,21 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBZ5cWoGMbSnJ8_EQE-Q-O7Vfhw1CKhA10',
-    appId: '1:191874077722:android:327bad017320df376c6da3',
-    messagingSenderId: '191874077722',
-    projectId: 'toyvalley-app',
-    storageBucket: 'toyvalley-app.appspot.com',
+    apiKey: 'AIzaSyDC8H5sq7uhNDSPNuy0e2HdHBvS1lg81hU',
+    appId: '1:991927031085:android:e7bc545605ad77c8bfafa4',
+    messagingSenderId: '991927031085',
+    projectId: 'empettoy',
+    storageBucket: 'empettoy.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBQ6BxN-Swdo5gV6yDePCkLTW6IlP2hp_w',
+    apiKey: 'AIzaSyDC8H5sq7uhNDSPNuy0e2HdHBvS1lg81hU',
     appId: '1:191874077722:ios:fb39ff7c3c2bdc826c6da3',
     messagingSenderId: '191874077722',
     projectId: 'toyvalley-app',
     storageBucket: 'toyvalley-app.appspot.com',
-    iosClientId: '191874077722-c70dfhptadv3vqcr51v1dkdgb4c004c2.apps.googleusercontent.com',
-    iosBundleId: 'com.empat.tech.toyvalley',
+    iosClientId:
+        '191874077722-c70dfhptadv3vqcr51v1dkdgb4c004c2.apps.googleusercontent.com',
+    iosBundleId: 'empettoy.firebasestorage.app',
   );
 }

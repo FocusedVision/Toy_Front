@@ -44,8 +44,8 @@ class _AvatarSelectorState extends State<AvatarSelector> {
                     loop: false,
                     itemBuilder: (context, wrapIndex) {
                       return Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
+                        spacing: 22,
+                        runSpacing: 20,
                         children: List.generate(
                           state.chunkedAvatars?[wrapIndex].length ?? 0,
                           (index) {

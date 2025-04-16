@@ -143,10 +143,7 @@ class NetworkRepository {
     String endPoint = 'api/products/$id/events';
     final api = service.getApiClient();
     try {
-      final params = {
-        "type": type,
-        if (seconds != null) "seconds": seconds
-      };
+      final params = {"type": type, if (seconds != null) "seconds": seconds};
       print(params);
       final result = await api!.post(endPoint, data: params);
       return ApiResponse.fromJson(result.data);
@@ -189,6 +186,43 @@ class NetworkRepository {
         "token": token,
       };
       final result = await api!.post(endPoint, data: params);
+      return ApiResponse.fromJson(result.data);
+    } on DioException catch (error) {
+      return errorResponse(error.response);
+    }
+  }
+
+  Future<ApiResponse> getNotificationSettings() async {
+    String endPoint = 'api/user/notification';
+    final api = service.getApiClient();
+    try {
+      final result = await api!.get(endPoint);
+      return ApiResponse.fromJson(result.data);
+    } on DioException catch (error) {
+      return errorResponse(error.response);
+    }
+  }
+
+  Future<ApiResponse> updateNotificationSettings(
+      {required bool isEnabled}) async {
+    String endPoint = 'api/user/notification';
+    final api = service.getApiClient();
+    try {
+      final params = {
+        'is_enabled': isEnabled,
+      };
+      final result = await api!.post(endPoint, data: params);
+      return ApiResponse.fromJson(result.data);
+    } on DioException catch (error) {
+      return errorResponse(error.response);
+    }
+  }
+
+  Future getWishlistShareLink() async {
+    String endPoint = 'api/user/wishlist/share';
+    final api = service.getApiClient();
+    try {
+      final result = await api!.get(endPoint);
       return ApiResponse.fromJson(result.data);
     } on DioException catch (error) {
       return errorResponse(error.response);
