@@ -6,11 +6,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 
 Future<void> onBackgroundMessage(RemoteMessage message) async {
   await Firebase.initializeApp();
-
   print("Background message received:");
   print("Title: ${message.notification?.title}");
-  print("Body: ${message.notification?.body}");
-  print("Data: ${message.data}");
 }
 
 class FCM {
@@ -20,49 +17,13 @@ class FCM {
   final streamBackground = StreamController<Map<String, dynamic>>.broadcast();
   final streamTerminated = StreamController<Map<String, dynamic>>.broadcast();
 
-  // setNotifications() {
-  //   if (Platform.isIOS) {
-  //     _firebaseMessaging.requestPermission();
-  //   }
-  //   _firebaseMessaging.getInitialMessage().then((message) {
-  //     print("^^^^");
-  //     print(message);
-  //     if (message != null) {
-  //       print(message.data);
-  //       streamTerminated.sink.add(message.data);
-  //     }
-  //   });
-  //   FirebaseMessaging.onBackgroundMessage(onBackgroundMessage);
-  //   FirebaseMessaging.onMessage.listen(
-  //     (message) async {
-  //       print("@@@");
-  //       print(message.data);
-
-  //       streamCtlr.sink.add(message.data);
-  //     },
-  //   );
-
-  //   FirebaseMessaging.onMessageOpenedApp.listen((message) {
-  //     print("%%%");
-  //     print(message.data);
-  //     streamBackground.sink.add(message.data);
-  //   });
-  //   // With this token you can test it easily on your phone
-  //   final token =
-  //       _firebaseMessaging.getToken().then((value) => print('Token: $value'));
-  // }
-
   setNotifications() async {
-    // Request permissions on both platforms
     final settings = await _firebaseMessaging.requestPermission(
       alert: true,
       badge: true,
       sound: true,
     );
 
-    print("Authorization status: ${settings.authorizationStatus}");
-
-    // Get FCM token and print it
     final token = await _firebaseMessaging.getToken();
     print('FCM Token: $token');
 
@@ -71,7 +32,11 @@ class FCM {
     if (initialMessage != null) {
       print("App opened from terminated state with message:");
       print(initialMessage.data);
-      streamTerminated.sink.add(initialMessage.data);
+      if (initialMessage.data['type'] == '1') {
+        // NEW_PRODUCT_LIVE type
+        print('000000000000000000000000000000000');
+        streamTerminated.sink.add(initialMessage.data);
+      }
     }
 
     // Handle background messages
@@ -82,7 +47,6 @@ class FCM {
       (message) {
         print("Foreground message received:");
         print("Title: ${message.notification?.title}");
-        print("Body: ${message.notification?.body}");
         print("Data: ${message.data}");
 
         streamCtlr.sink.add(message.data);
@@ -93,7 +57,10 @@ class FCM {
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
       print("App opened from background with message:");
       print(message.data);
-      streamBackground.sink.add(message.data);
+      if (message.data['type'] == '1') {
+        // NEW_PRODUCT_LIVE type
+        streamBackground.sink.add(message.data);
+      }
     });
   }
 

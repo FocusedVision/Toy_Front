@@ -48,6 +48,7 @@ dependencies:
 
   #storage
   flutter_secure_storage: ^5.0.2
+  shared_preferences: ^2.2.0
 
   #config
   flutter_launcher_icons: ^0.9.3

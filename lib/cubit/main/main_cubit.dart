@@ -117,6 +117,20 @@ class MainCubit extends Cubit<MainState> {
 
   void startPushNotifications() async {
     try {
+      final fcm = FCM();
+      await fcm.setNotifications();
+
+      // Listen for notification opens
+      fcm.streamBackground.stream.listen((data) {
+        print('Notification opened from background');
+        getProducts(1); // Refresh products
+      });
+
+      fcm.streamTerminated.stream.listen((data) {
+        print('Notification opened from terminated state');
+        getProducts(1); // Refresh products
+      });
+
       await FirebaseMessaging.instance.unsubscribeFromTopic('new_products');
       await FirebaseMessaging.instance.subscribeToTopic('new_products');
 
